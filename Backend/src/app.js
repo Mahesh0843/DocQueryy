@@ -14,7 +14,15 @@ app.use(cookieparser());
 
 app.use(cors({ origin: FRONTEND_URL, credentials: true }));
 
-// Simple preflight handling for older path-to-regexp versions
+// app.use(cors({
+//   origin: 'https://ticxchange.netlify.app',
+//   credentials: true,
+//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+//   allowedHeaders: ['Content-Type', 'Authorization'],
+//   exposedHeaders: ['set-cookie']
+// }));
+
+// Simple preflight handling
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', FRONTEND_URL);
   res.header('Access-Control-Allow-Credentials', 'true');
