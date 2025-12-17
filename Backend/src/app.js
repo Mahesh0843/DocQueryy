@@ -12,15 +12,15 @@ const FRONTEND_URL = "http://localhost:3000";
 app.use(express.json());
 app.use(cookieparser());
 
-app.use(cors({ origin: FRONTEND_URL, credentials: true }));
+// app.use(cors({ origin: FRONTEND_URL, credentials: true }));
 
-// app.use(cors({
-//   origin: 'https://ticxchange.netlify.app',
-//   credentials: true,
-//   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
-//   allowedHeaders: ['Content-Type', 'Authorization'],
-//   exposedHeaders: ['set-cookie']
-// }));
+app.use(cors({
+  origin: 'https://docqueryy.netlify.app',
+  credentials: true,
+  methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
+  allowedHeaders: ['Content-Type', 'Authorization'],
+  exposedHeaders: ['set-cookie']
+}));
 
 // Simple preflight handling
 app.use((req, res, next) => {
