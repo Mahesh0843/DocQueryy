@@ -7,7 +7,7 @@ dotenv.config();
 
 const cors = require("cors");
 
-const FRONTEND_URL = "http://localhost:3000";
+const FRONTEND_URL = "https://docqueryy.netlify.app";
 
 app.use(express.json());
 app.use(cookieparser());
