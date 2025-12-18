@@ -1,11 +1,9 @@
 
-// UPLOAD DOCUMENT
 const pdfParse = require("pdf-parse");
 const Document = require("../models/Document");
 const getEmbedding = require("../services/embeddingService");
 const chunkText = require("../services/chunkService");
 
-// UPLOAD DOCUMENT
 exports.uploadDocument = async (req, res) => {
   try {
     if (!req.file) {
@@ -14,12 +12,10 @@ exports.uploadDocument = async (req, res) => {
 
     let text = "";
 
-    // PDF handling
     if (req.file.mimetype === "application/pdf") {
       const pdfData = await pdfParse(req.file.buffer);
       text = pdfData.text || "";
     }
-    // Text file handling
     else if (
       req.file.mimetype.includes("text") ||
       /\.(txt|md|html)$/i.test(req.file.originalname)
@@ -31,17 +27,14 @@ exports.uploadDocument = async (req, res) => {
         .json({ error: "Only PDF, TXT, MD, HTML files accepted" });
     }
 
-    // Check extracted text
     if (!text || !text.trim()) {
       return res
         .status(400)
         .json({ error: "Unable to extract text from uploaded file" });
     }
 
-    // Chunk text
     const chunks = chunkText(text);
 
-    // Prepare documents
     const docs = [];
     for (const chunk of chunks) {
       const emb = await getEmbedding(chunk);
@@ -54,7 +47,6 @@ exports.uploadDocument = async (req, res) => {
       });
     }
 
-    // Insert into MongoDB
     await Document.insertMany(docs);
 
     return res.json({
@@ -68,14 +60,12 @@ exports.uploadDocument = async (req, res) => {
     res.status(500).json({ error: err.message });
   }
 };
-// LIST DOCUMENTS
 exports.listDocuments = async (req, res) => {
   try {
     const files = await Document.distinct("filename", {
       userId: req.user._id,
     });
 
-    // Get additional document information
     const documents = await Document.aggregate([
       { $match: { userId: req.user._id } },
       {
@@ -105,7 +95,6 @@ exports.listDocuments = async (req, res) => {
   }
 };
 
-// GET DOCUMENT CHUNKS
 exports.getDocumentChunks = async (req, res) => {
   try {
     const { filename } = req.params;
@@ -137,7 +126,6 @@ exports.getDocumentChunks = async (req, res) => {
   }
 };
 
-// DELETE DOCUMENT
 exports.deleteDocument = async (req, res) => {
   try {
     const { filename } = req.params;
@@ -162,7 +150,6 @@ exports.deleteDocument = async (req, res) => {
   }
 };
 
-// SEARCH DOCUMENTS
 exports.searchDocuments = async (req, res) => {
   try {
     const { query } = req.body;
@@ -171,12 +158,8 @@ exports.searchDocuments = async (req, res) => {
       return res.status(400).json({ error: "Search query is required" });
     }
 
-    // Get embedding for the search query
     const queryEmbedding = await getEmbedding(query.trim());
     
-    // Find similar documents using vector search
-    // Note: This assumes your MongoDB has vector search capabilities
-    // You might need to adjust this based on your database setup
     const similarChunks = await Document.aggregate([
       {
         $match: {

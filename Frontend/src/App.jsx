@@ -7,7 +7,6 @@ export default function App() {
   const [user, setUser] = useState(null);
 
   useEffect(() => {
-    // No direct endpoint for current user; rely on localStorage login persistence
     const u = localStorage.getItem("ri_username");
     if (u) setUser(JSON.parse(u));
   }, []);

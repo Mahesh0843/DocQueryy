@@ -4,7 +4,6 @@ const getEmbedding = require("../services/embeddingService");
 const generateAnswer = require("../services/aiService");
 const ChatHistory = require("../models/ChatHistory");
 
-// MAIN RAG QUERY HANDLER
 exports.queryRAG = async (req, res) => {
   try {
     const { query } = req.body;
@@ -13,13 +12,10 @@ exports.queryRAG = async (req, res) => {
       return res.status(400).json({ error: "Query is required" });
     }
 
-    // 1. Get query embedding
     const queryVector = await getEmbedding(query);
 
-    // Convert userId to ObjectId
     const userId = new mongoose.Types.ObjectId(req.user._id);
 
-    // 2. Vector search with proper indexing
     const results = await Document.aggregate([
       {
         $vectorSearch: {
@@ -47,32 +43,6 @@ exports.queryRAG = async (req, res) => {
       }
     ]);
 
-    // Alternative: If the above still doesn't work, try this simpler approach
-    // const results = await Document.aggregate([
-    //   {
-    //     $match: {
-    //       userId: userId
-    //     }
-    //   },
-    //   {
-    //     $vectorSearch: {
-    //       index: "vector_index", 
-    //       path: "embedding",
-    //       queryVector: queryVector,
-    //       numCandidates: 100,
-    //       limit: 5
-    //     }
-    //   },
-    //   {
-    //     $project: {
-    //       content: 1,
-    //       filename: 1,
-    //       score: { $meta: "vectorSearchScore" }
-    //     }
-    //   }
-    // ]);
-
-    // 3. Handle no results
     if (results.length === 0) {
       await ChatHistory.create({
         userId: req.user._id,
@@ -87,7 +57,6 @@ exports.queryRAG = async (req, res) => {
       });
     }
 
-    // 4. Build context
     const context = results
       .map(r => `File: ${r.filename}\nContent: ${r.content}`)
       .join("\n\n");
@@ -104,10 +73,8 @@ exports.queryRAG = async (req, res) => {
       Provide a clear, concise answer based on the context.
     `;
 
-    // 5. Generate answer
     const answer = await generateAnswer(prompt);
 
-    // 6. Save to chat history
     await ChatHistory.create({
       userId: req.user._id,
       question: query,
@@ -115,7 +82,6 @@ exports.queryRAG = async (req, res) => {
       references: results,
     });
 
-    // 7. Return response
     res.json({ 
       success: true,
       answer, 

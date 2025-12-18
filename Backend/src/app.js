@@ -12,8 +12,6 @@ const FRONTEND_URL = "http://localhost:3000";
 app.use(express.json());
 app.use(cookieparser());
 
-// app.use(cors({ origin: FRONTEND_URL, credentials: true }));
-
 app.use(cors({
   origin: 'https://docqueryy.netlify.app',
   credentials: true,
@@ -22,7 +20,6 @@ app.use(cors({
   exposedHeaders: ['set-cookie']
 }));
 
-// Simple preflight handling
 app.use((req, res, next) => {
   res.header('Access-Control-Allow-Origin', FRONTEND_URL);
   res.header('Access-Control-Allow-Credentials', 'true');

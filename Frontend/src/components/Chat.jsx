@@ -31,7 +31,6 @@ export default function Chat({ user, onSignOut }) {
       setFilesError(null);
       setFiles(res.data || []);
     } catch (err) {
-      // Surface error to the UI so user knows if auth failed
       if (err?.response?.status === 401) {
         setFilesError('Not authenticated. Please log in to see your uploaded documents.');
       } else {
