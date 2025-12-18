@@ -10,4 +10,20 @@ const api = axios.create({
   }
 });
 
+api.interceptors.request.use(
+  (config) => {
+    const token = localStorage.getItem("docquery_token");
+    if (token) {
+      config.headers.Cookie = `token=${token}`;
+      if (!config.headers.Authorization) {
+        config.headers.Authorization = `Bearer ${token}`;
+      }
+    }
+    return config;
+  },
+  (error) => {
+    return Promise.reject(error);
+  }
+);
+
 export default api;

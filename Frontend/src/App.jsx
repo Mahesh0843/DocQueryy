@@ -28,7 +28,7 @@ export default function App() {
         {!user ? (
           <Auth onLogin={(u) => { setUser(u); localStorage.setItem('ri_username', JSON.stringify(u)); }} />
         ) : (
-          <Chat user={user} onSignOut={() => { setUser(null); localStorage.removeItem('ri_username'); }} />
+          <Chat user={user} onSignOut={() => { setUser(null); localStorage.removeItem('ri_username'); localStorage.removeItem('docquery_token'); }} />
         )}
       </main>
 

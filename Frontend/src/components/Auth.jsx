@@ -13,6 +13,9 @@ export default function Auth({ onLogin }) {
     setError(null);
     try {
       const res = await api.post("/login", { email, password });
+      if (res.data.token) {
+        localStorage.setItem("docquery_token", res.data.token);
+      }
       onLogin({ username: res.data.username, email });
     } catch (err) {
       setError(err?.response?.data?.error || err.message);
